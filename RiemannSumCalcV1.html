@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<head>
+    <meta charset="UTF-8">
+    <title>Riemann Sum Calculator</title>
+</head>
+<body>
+    <p>calc riemann sum for following format: [ |6-x^3| ]</p>
+    <p>LOWER BOUND MUST BE SMALLER THAN HIGHER BOUND</p>
+
+    <label for="INintervals">Intervals:</label> <input type="number" id="INintervals" value="4"> <br>
+    <label for="INlowerBound">Lower Bound:</label> <input type="number" id="INlowerBound" value="0"> <br>
+    <label for="INupperBound">Upper Bound:</label> <input type="number" id="INupperBound" value="1"> <br>
+    <br>
+    <label for="OUTdeltaX">Delta X:</label> <br> <input type="text" id="OUTdeltaX" value="-" readonly="true"> <br>
+    <label for="OUTfuncValues">Function Value Pairs:</label> <br> <input type="text" id="OUTfuncValues" value="-" readonly="true"> <br> 
+    <label for="OUTapproxArea">Approximate Area:</label> <br> <input type="text" id="OUTapproxArea" value="-" readonly="true"> <br>
+
+    <button id="BTNcalcSum" onclick="calcSum()"> calculate sum </button>
+
+    <script id="js_riemanncalc">
+        
+        //  --------------------  //
+        //  ### START SCRIPT ###  //
+        //  --------------------  //
+
+        /*
+        Description:
+        calc starts at function calcSum
+        HARDCODED for 6-x^3, and for midpoint-sum.
+        vvv modify hardcode below vvv
+        */
+
+        // Use input to get output for the included hardcoded function
+        function calcFunctionPoint(x) {
+            x = 6 - x ** 3
+            return Math.abs(x)
+        }
+
+        /*
+        FORMULAS:
+        deltaX: (b-a)/n
+        function: hardcoded :(
+        zeroes:
+        */
+
+        // user defined
+        var subIntervals = 4
+        var lowerBound = 0
+        var upperBound = 1
+
+        // derived
+        var deltaX
+        var zerosList = []
+        var areaList = []
+
+        function calcSum() {
+            /// do stuff here
+            if(updateInputs() != 0) { return }
+            calcDeltaX()
+            calcMidpointZeroes()
+            calcAreas()
+            addAreas()
+            cleanup()
+        }
+
+        function cleanup() {
+            deltaX = 0
+            zerosList = []
+            areaList = []
+        }
+
+
+        // Grab and check user inputs before calculating
+        function updateInputs() {
+            subIntervals = Number(document.getElementById("INintervals").value)
+            lowerBound = Number(document.getElementById("INlowerBound").value)
+            upperBound = Number(document.getElementById("INupperBound").value)
+
+            console.log("subIntervals: " + subIntervals)
+            console.log("lowerBound: " + lowerBound)
+            console.log("upperBound: " + upperBound)
+
+            // check valid user input. if valid, continue
+            if(lowerBound >= upperBound) { alert("PLEASE ENSURE LOWER BOUND IS LESS THAN UPPER BOUND"); console.log("FAILED, INVALID INPUT"); return 1}
+            return 0
+        }
+        
+        // Calculate the Delta X (interval length)
+        function calcDeltaX() {
+            let temp = upperBound - lowerBound
+            temp = temp / subIntervals 
+            deltaX = temp
+            document.getElementById("OUTdeltaX").value = deltaX
+            console.log("deltaX = " + deltaX)
+            return temp
+        }
+
+        // Calculate the list of midpoint riemann x values (first needs deltaX)
+        function calcMidpointZeroes() {
+            let temp
+            for (let i = 0; i < subIntervals; i++) {
+                temp = lowerBound + (i + 0.5) * deltaX
+                zerosList.push(temp)
+            }
+            console.log("X-Values: " + zerosList.toString())
+        }
+
+        // For each x value, run the value through the function for height and multiply for interval area
+        function calcAreas() {
+            let tempY
+            let tempResult
+            for (let i = 0; i < subIntervals; i++) {
+                tempY = calcFunctionPoint(zerosList[i])
+                tempResult = deltaX * tempY
+                areaList.push(tempResult)                
+            }
+            console.log("Areas: " + areaList)
+        }
+
+        // Combine the areas
+        function addAreas() {
+            let tempResult = 0
+            areaList.forEach(element => {
+            tempResult = tempResult + element    
+            });
+            document.getElementById("OUTapproxArea").value = tempResult
+            console.log(tempResult)
+        }
+
+
+        //  ------------------  //
+        //  ### END SCRIPT ###  //
+        //  ------------------  //
+    </script>
+
+</body>
